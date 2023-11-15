@@ -88,3 +88,19 @@ input#camera {
 input#camera:disabled {
     filter: opacity(0.50);
 }
+
+div.popup-container {
+    min-width: 50px;
+    max-width: 300px;
+    width: 25vw;
+}
+
+canvas.image-popup {
+    width: 100%;
+}
+
+p.popup-location-text {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: 2px;
+}

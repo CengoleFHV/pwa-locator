@@ -1,7 +1,16 @@
 import cameraImage from "./camera.svg";
 import saveImage from "./svgs/save.svg";
 import pauseImage from "./svgs/pause-btn.svg";
+import playImage from "./svgs/play-btn.svg";
 import xCircleImage from "./svgs/x-circle.svg";
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+  iconUrl: require("leaflet/dist/images/marker-icon.png"),
+  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+});
 
 const COORD_FORMATTER = Intl.NumberFormat("de-DE", {
   minimumFractionDigits: 6,
@@ -161,13 +170,11 @@ function onLocationError(e) {
 /*
  *
  * had to import everything into one file somehow or parcel will explode
- *
+ * was originally in cameraDialog.js
  */
 
 var video;
 var playing = true;
-
-console.log(saveImage);
 
 window.openCamera = function openCamera() {
   let cameraDialog = document.getElementById("camera-dialog");
@@ -182,7 +189,7 @@ window.openCamera = function openCamera() {
   let cameraControl = document.getElementById("camera-control");
 
   cameraControl.innerHTML +=
-    "<input id='save-image' type='image' onClick='save()' />";
+    "<input id='save-image' type='image' onClick='save()' disabled />";
   cameraControl.innerHTML +=
     "<input id='pause-play' type='image' onClick='togglePause()' />";
   cameraControl.innerHTML +=
@@ -205,15 +212,22 @@ window.closeCamera = function closeCamera() {
   cameraDialog.classList.add("hidden");
 
   stopCamera();
+  playing = true;
 };
 
 window.togglePause = function togglePause() {
   let cameraElement = document.getElementById("camera-element");
+  let pausePlayElement = document.getElementById("pause-play");
+  let saveImageElement = document.getElementById("save-image");
 
   if (playing) {
+    saveImageElement.removeAttribute("disabled");
+    pausePlayElement.src = playImage;
     cameraElement.pause();
     playing = false;
   } else {
+    saveImageElement.setAttribute("disabled", "true");
+    pausePlayElement.src = pauseImage;
     playCamera();
     playing = true;
   }
@@ -245,3 +259,33 @@ function playCamera() {
       });
   }
 }
+
+window.save = async function save(location) {
+  const ll = ranger._latlng;
+
+  let popupContainer = document.createElement("div");
+  popupContainer.classList.add("popup-container");
+
+  let canvas = document.createElement("canvas");
+  popupContainer.appendChild(canvas);
+
+  let locationParagraph = document.createElement("p");
+  locationParagraph.classList.add("popup-location-text");
+  locationParagraph.innerHTML = `${ll.lat}, ${ll.lng}`;
+
+  popupContainer.appendChild(locationParagraph);
+
+  canvas.classList.add("image-popup");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  canvas
+    .getContext("2d")
+    .drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
+  const markerPopup = L.popup().setContent(popupContainer);
+  L.marker([ll.lat, ll.lng]).bindPopup(markerPopup).addTo(map);
+
+  closeCamera();
+};
