@@ -158,7 +158,6 @@ window.onload = () => {
 
   if (savedImages) {
     savedImages.forEach((pin) => {
-      console.log("pin", pin);
       pinMarkersAndPopups(pin.latlng.lat, pin.latlng.lng, pin.image);
     });
   }
@@ -343,8 +342,6 @@ function pinMarkersAndPopups(lat, lng, imageUri) {
   var img = new Image();
   img.src = imageUri;
   img.onload = function () {
-    console.log(img);
-
     let canvas = document.createElement("canvas");
 
     canvas.classList.add("image-popup");
