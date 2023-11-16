@@ -194,6 +194,8 @@ window.openCamera = function openCamera() {
 
   let cameraControl = document.getElementById("camera-control");
 
+  cameraControl.innerHTML = "";
+
   cameraControl.innerHTML +=
     "<input id='save-image' type='image' onClick='save()' disabled />";
   cameraControl.innerHTML +=
