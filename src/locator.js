@@ -214,9 +214,7 @@ window.openCamera = function openCamera() {
 
 window.closeCamera = function closeCamera() {
   let cameraDialog = document.getElementById("camera-dialog");
-  let cameraElement = document.getElementById("camera-element");
 
-  cameraElement.remove();
   cameraDialog.classList.add("hidden");
 
   stopCamera();
