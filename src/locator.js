@@ -285,7 +285,7 @@ const locateAndSave = (e) => {
 
   ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
 
-  drawLocationWithBG(ctx, canvas, `${coords.latitude}, ${coords.longitude}`, 2);
+  drawLocationWithBG(ctx, canvas, `${coords.latitude}, ${coords.longitude}`, 5);
 
   const markerPopup = L.popup().setContent(canvas);
   L.marker([coords.latitude, coords.longitude])
@@ -296,23 +296,34 @@ const locateAndSave = (e) => {
 };
 
 const drawLocationWithBG = (ctx, canvas, text, padding) => {
-  ctx.textBaseline = "center";
+  const fontSize = 35;
+
   ctx.textAlign = "center";
-  ctx.font = "25px sans-serif";
+  ctx.font = `${fontSize}px sans-serif`;
 
   const textMeasurement = ctx.measureText(text);
+  let actualHeight =
+    textMeasurement.actualBoundingBoxAscent +
+    textMeasurement.actualBoundingBoxDescent * 2;
 
-  ctx.fillStyle = "rgba(255,255,255,0.5)";
+  ctx.fillStyle = "#ffffff80";
+
+  // ctx.fillRect(
+  //   canvas.width / 2 - padding - textMeasurement.width / 2,
+  //   canvas.height -
+  //     padding * 2 -
+  //     textMeasurement.emHeightAscent +
+  //     textMeasurement.emHeightDescent -
+  //     padding,
+  //   textMeasurement.width + padding * 2,
+  //   textMeasurement.emHeightAscent + textMeasurement.emHeightDescent
+  // );
 
   ctx.fillRect(
-    canvas.width / 2 - padding - textMeasurement.width / 2,
-    canvas.height -
-      padding * 2 -
-      textMeasurement.emHeightAscent +
-      textMeasurement.emHeightDescent -
-      padding,
+    canvas.width / 2 - textMeasurement.width / 2 - padding,
+    canvas.height - fontSize - padding,
     textMeasurement.width + padding * 2,
-    textMeasurement.emHeightAscent + textMeasurement.emHeightDescent
+    actualHeight + padding * 2
   );
 
   ctx.fillStyle = "#000";
