@@ -89,14 +89,10 @@ input#camera:disabled {
     filter: opacity(0.50);
 }
 
-div.popup-container {
+canvas.image-popup {
     min-width: 50px;
     max-width: 300px;
     width: 25vw;
-}
-
-canvas.image-popup {
-    width: 100%;
 }
 
 p.popup-location-text {

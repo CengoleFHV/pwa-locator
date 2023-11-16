@@ -12,6 +12,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
+var geolocation;
+
 const COORD_FORMATTER = Intl.NumberFormat("de-DE", {
   minimumFractionDigits: 6,
   maximumFractionDigits: 6,
@@ -64,6 +66,11 @@ function configureMap(latLngArray) {
 
   map.on("locationfound", onLocationFound);
   map.on("locationerror", onLocationError);
+
+  if ("geolocation" in navigator) {
+    /* geolocation is available */
+    geolocation = navigator.geolocation;
+  }
 }
 
 function updatePosition(position) {
@@ -260,32 +267,59 @@ function playCamera() {
   }
 }
 
-window.save = async function save(location) {
-  const ll = ranger._latlng;
+window.save = async function save() {
+  geolocation.getCurrentPosition(locateAndSave);
+};
 
-  let popupContainer = document.createElement("div");
-  popupContainer.classList.add("popup-container");
+const locateAndSave = (e) => {
+  const coords = e.coords;
 
   let canvas = document.createElement("canvas");
-  popupContainer.appendChild(canvas);
-
-  let locationParagraph = document.createElement("p");
-  locationParagraph.classList.add("popup-location-text");
-  locationParagraph.innerHTML = `${ll.lat}, ${ll.lng}`;
-
-  popupContainer.appendChild(locationParagraph);
 
   canvas.classList.add("image-popup");
 
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
 
-  canvas
-    .getContext("2d")
-    .drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+  const ctx = canvas.getContext("2d");
 
-  const markerPopup = L.popup().setContent(popupContainer);
-  L.marker([ll.lat, ll.lng]).bindPopup(markerPopup).addTo(map);
+  ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
+  drawLocationWithBG(ctx, canvas, `${coords.latitude}, ${coords.longitude}`, 2);
+
+  const markerPopup = L.popup().setContent(canvas);
+  L.marker([coords.latitude, coords.longitude])
+    .bindPopup(markerPopup)
+    .addTo(map);
 
   closeCamera();
+};
+
+const drawLocationWithBG = (ctx, canvas, text, padding) => {
+  ctx.textBaseline = "center";
+  ctx.textAlign = "center";
+  ctx.font = "25px sans-serif";
+
+  const textMeasurement = ctx.measureText(text);
+  console.log(textMeasurement);
+
+  ctx.fillStyle = "rgba(255,255,255,0.5)";
+
+  console.log(textMeasurement.width);
+  console.log(textMeasurement.height);
+
+  ctx.fillRect(
+    canvas.width / 2 - padding - textMeasurement.width / 2,
+    canvas.height -
+      padding * 2 -
+      textMeasurement.emHeightAscent +
+      textMeasurement.emHeightDescent -
+      padding,
+    textMeasurement.width + padding * 2,
+    textMeasurement.emHeightAscent + textMeasurement.emHeightDescent
+  );
+
+  ctx.fillStyle = "#000";
+
+  ctx.fillText(text, canvas.width / 2, canvas.height - padding);
 };
