@@ -264,7 +264,7 @@ function playCamera() {
         video.play();
       })
       .catch(function (error) {
-        console.log("Something went wrong!");
+        console.log("Something went wrong!", error);
       });
   }
 }
