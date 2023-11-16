@@ -188,7 +188,7 @@ window.openCamera = function openCamera() {
 
   cameraDialog.classList.remove("hidden");
 
-  cameraElement = document.getElementById("camera-element");
+  let cameraElement = document.getElementById("camera-element");
 
   playCamera();
 
