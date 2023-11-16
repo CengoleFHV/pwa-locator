@@ -203,9 +203,9 @@ window.openCamera = function openCamera() {
   cameraControl.innerHTML +=
     "<input id='close-camera' type='image' onClick='closeCamera()' />";
 
-  saveImageElement = document.getElementById("save-image");
-  pausePlayElement = document.getElementById("pause-play");
-  closeElement = document.getElementById("close-camera");
+  let saveImageElement = document.getElementById("save-image");
+  let pausePlayElement = document.getElementById("pause-play");
+  let closeElement = document.getElementById("close-camera");
 
   saveImageElement.src = saveImage;
   pausePlayElement.src = pauseImage;
