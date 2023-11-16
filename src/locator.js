@@ -187,8 +187,7 @@ window.openCamera = function openCamera() {
   let cameraDialog = document.getElementById("camera-dialog");
 
   cameraDialog.classList.remove("hidden");
-  cameraDialog.innerHTML =
-    "<video id='camera-element' autoplay></video><div id='camera-control'></div>";
+
   cameraElement = document.getElementById("camera-element");
 
   playCamera();
@@ -260,6 +259,7 @@ function playCamera() {
       .getUserMedia({ video: true })
       .then(function (stream) {
         video.srcObject = stream;
+        video.play();
       })
       .catch(function (error) {
         console.log("Something went wrong!");
