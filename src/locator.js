@@ -303,12 +303,8 @@ const drawLocationWithBG = (ctx, canvas, text, padding) => {
   ctx.font = "25px sans-serif";
 
   const textMeasurement = ctx.measureText(text);
-  console.log(textMeasurement);
 
   ctx.fillStyle = "rgba(255,255,255,0.5)";
-
-  console.log(textMeasurement.width);
-  console.log(textMeasurement.height);
 
   ctx.fillRect(
     canvas.width / 2 - padding - textMeasurement.width / 2,
