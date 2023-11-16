@@ -154,6 +154,14 @@ window.onload = () => {
   }
 
   map.locate({ setView: true, maxZoom: 18 });
+  let savedImages = JSON.parse(localStorage.getItem("savedImages"));
+
+  if (savedImages) {
+    savedImages.forEach((pin) => {
+      console.log("pin", pin);
+      pinMarkersAndPopups(pin.latlng.lat, pin.latlng.lng, pin.image);
+    });
+  }
 };
 
 function onLocationFound(e) {
@@ -187,8 +195,6 @@ window.openCamera = function openCamera() {
   let cameraDialog = document.getElementById("camera-dialog");
 
   cameraDialog.classList.remove("hidden");
-
-  let cameraElement = document.getElementById("camera-element");
 
   playCamera();
 
@@ -292,6 +298,19 @@ const locateAndSave = (e) => {
     .bindPopup(markerPopup)
     .addTo(map);
 
+  let savedImages = JSON.parse(localStorage.getItem("savedImages"));
+
+  if (!savedImages) {
+    savedImages = [];
+  }
+
+  savedImages.push({
+    latlng: { lat: coords.latitude, lng: coords.longitude },
+    image: canvas.toDataURL(),
+  });
+
+  localStorage.setItem("savedImages", JSON.stringify(savedImages));
+
   closeCamera();
 };
 
@@ -308,17 +327,6 @@ const drawLocationWithBG = (ctx, canvas, text, padding) => {
 
   ctx.fillStyle = "#ffffff80";
 
-  // ctx.fillRect(
-  //   canvas.width / 2 - padding - textMeasurement.width / 2,
-  //   canvas.height -
-  //     padding * 2 -
-  //     textMeasurement.emHeightAscent +
-  //     textMeasurement.emHeightDescent -
-  //     padding,
-  //   textMeasurement.width + padding * 2,
-  //   textMeasurement.emHeightAscent + textMeasurement.emHeightDescent
-  // );
-
   ctx.fillRect(
     canvas.width / 2 - textMeasurement.width / 2 - padding,
     canvas.height - fontSize - padding,
@@ -330,3 +338,27 @@ const drawLocationWithBG = (ctx, canvas, text, padding) => {
 
   ctx.fillText(text, canvas.width / 2, canvas.height - padding);
 };
+
+function pinMarkersAndPopups(lat, lng, imageUri) {
+  var img = new Image();
+  img.src = imageUri;
+  img.onload = function () {
+    console.log(img);
+
+    let canvas = document.createElement("canvas");
+
+    canvas.classList.add("image-popup");
+
+    canvas.width = 640;
+    canvas.height = 480;
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.drawImage(img, 0, 0, 640, 480);
+
+    drawLocationWithBG(ctx, canvas, `${lat}, ${lng}`, 5);
+
+    const markerPopup = L.popup().setContent(canvas);
+    L.marker([lat, lng]).bindPopup(markerPopup).addTo(map);
+  };
+}
